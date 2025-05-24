@@ -51,6 +51,7 @@
     "libs/shared/helpers",
     "libs/user/authentication",
     "libs/user/blog-user",
-    "libs/shared/data-access"
+    "libs/shared/data-access",
+    "libs/user/config"
   ]
 }
