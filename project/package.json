@@ -6,12 +6,18 @@
   "private": true,
   "dependencies": {
     "@nestjs/common": "^10.0.2",
+    "@nestjs/config": "3.2.1",
     "@nestjs/core": "^10.0.2",
+    "@nestjs/mongoose": "^10.0.4",
     "@nestjs/platform-express": "^10.0.2",
+    "@nestjs/swagger": "^7.3.1",
     "axios": "^1.6.0",
     "bcrypt": "5.1.1",
     "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "dayjs": "^1.11.13",
+    "joi": "17.12.3",
+    "mongoose": "^8.2.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0"
   },
@@ -31,6 +37,7 @@
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
     "@types/bcrypt": "5.0.2",
+    "@types/mongoose": "5.11.96",
     "@types/node": "~18.16.9",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
@@ -49,6 +56,7 @@
     "libs/shared/helpers",
     "libs/user/authentication",
     "libs/user/blog-user",
-    "libs/shared/data-access"
+    "libs/shared/data-access",
+    "libs/user/config"
   ]
 }

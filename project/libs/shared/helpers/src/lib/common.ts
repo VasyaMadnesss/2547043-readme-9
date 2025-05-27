@@ -2,6 +2,8 @@ import { ClassTransformOptions, plainToInstance } from 'class-transformer';
 
 type PlainObject = Record<string, unknown>;
 
+type MongoConnectionStringObject = Record<string, unknown>;
+
 export function fillDto<T, V extends PlainObject>(
   DtoClass: new () => T,
   plainObject: V,
@@ -23,4 +25,9 @@ export function fillDto<T, V extends PlainObject>(
       excludeExtraneousValues: true,
       ...options,
   });
+}
+
+export function getMongoConnectionString(
+  {username, password, host, port, databaseName, authDatabase}: MongoConnectionStringObject): string {
+  return `mongodb://${username}:${password}@${host}:${port}/${databaseName}?authSource=${authDatabase}`;
 }
