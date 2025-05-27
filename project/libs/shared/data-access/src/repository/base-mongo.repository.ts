@@ -9,7 +9,7 @@ export abstract class BaseMongoRepository<T extends Entity & StorableEntity<Retu
   constructor(
     protected entityFactory: EntityFactory<T>,
     protected readonly model: Model<DocumentType>,
-  ) {}
+  ) { }
 
   protected createEntityFromDocument(document: DocumentType): T | null {
     if (!document) {
@@ -42,14 +42,14 @@ export abstract class BaseMongoRepository<T extends Entity & StorableEntity<Retu
     )
       .exec();
 
-    if (! updatedDocument) {
+    if (!updatedDocument) {
       throw new NotFoundException(`Entity with id ${entity.id} not found`);
     }
   }
 
   public async deleteById(id: T['id']): Promise<void> {
     const deletedDocument = await this.model.findByIdAndDelete(id).exec();
-    if (! deletedDocument) {
+    if (!deletedDocument) {
       throw new NotFoundException(`Entity with id ${id} not found.`);
     }
   }

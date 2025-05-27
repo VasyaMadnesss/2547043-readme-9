@@ -22,11 +22,8 @@ export class AuthenticationService {
       throw new ConflictException(AUTH_USER_EXISTS);
     }
 
-    const userEntity = await new BlogUserEntity(blogUser)
-      .setPassword(password)
-
-      this.blogUserRepository
-      .save(userEntity);
+    const userEntity = await new BlogUserEntity(blogUser).setPassword(password);
+    await this.blogUserRepository.save(userEntity);
 
     return userEntity;
   }

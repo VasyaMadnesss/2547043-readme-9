@@ -19,7 +19,7 @@ export class BlogUserEntity extends Entity implements StorableEntity<AuthUser> {
     if (!user) {
       return;
     }
-
+    console.log(user);
     this.id = user.id ?? '';
     this.email = user.email;
     this.name = user.name;
