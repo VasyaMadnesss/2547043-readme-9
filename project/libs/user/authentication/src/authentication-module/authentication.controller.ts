@@ -1,4 +1,4 @@
-import { Controller} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { Post, Body, Get, Param, HttpStatus } from '@nestjs/common';
 
 import { CreateUserDto } from '../dto/create-user.dto.js';
@@ -17,7 +17,7 @@ import { AuthenticationResponseMessage } from './authentication.constant';
 export class AuthenticationController {
   constructor(
     private readonly authService: AuthenticationService
-  ) {}
+  ) { }
 
   @ApiResponse({
     status: HttpStatus.CREATED,

@@ -1,4 +1,4 @@
-import { AnyObject, Document, Model, UpdateQuery } from 'mongoose';
+import { Document, Model, UpdateQuery } from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
 
 import { Entity, StorableEntity, EntityFactory } from '@project/shared-core';
@@ -15,8 +15,9 @@ export abstract class BaseMongoRepository<T extends Entity & StorableEntity<Retu
     if (!document) {
       return null;
     }
-
-    const plainObject = document.toObject({ versionKey: false }) as ReturnType<T['toPOJO']>;
+    const documentPOJO = document.toObject({ versionKey: false });
+    const documentId = document._id.toString();
+    const plainObject = { id: documentId, ...documentPOJO } as ReturnType<T['toPOJO']>;
     return this.entityFactory.create(plainObject);
   }
 
@@ -37,7 +38,7 @@ export abstract class BaseMongoRepository<T extends Entity & StorableEntity<Retu
   public async update(entity: T): Promise<void> {
     const updatedDocument = await this.model.findByIdAndUpdate(
       entity.id,
-      entity.toPOJO() as UpdateQuery<AnyObject>,
+      entity.toPOJO() as UpdateQuery<DocumentType>,
       { new: true, runValidators: true }
     )
       .exec();

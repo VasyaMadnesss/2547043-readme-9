@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class BlogUserFactory implements EntityFactory<BlogUserEntity> {
   public create(entityPlainData: AuthUser): BlogUserEntity {
-    return new BlogUserEntity(entityPlainData);
+    const newEntity = new BlogUserEntity(entityPlainData);
+    return newEntity;
   }
 }

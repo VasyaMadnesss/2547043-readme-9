@@ -9,10 +9,10 @@ import { AUTH_USER_EXISTS, AUTH_USER_NOT_FOUND, AUTH_USER_PASSWORD_WRONG } from 
 export class AuthenticationService {
   constructor(
     private readonly blogUserRepository: BlogUserRepository
-  ) {}
+  ) { }
 
   public async register(dto: CreateUserDto): Promise<BlogUserEntity> {
-    const {email, name, password} = dto;
+    const { email, name, password } = dto;
 
     const blogUser = { email, name, avatar: '', passwordHash: '' };
 
@@ -29,7 +29,7 @@ export class AuthenticationService {
   }
 
   public async verifyUser(dto: LoginUserDto) {
-    const {email, password} = dto;
+    const { email, password } = dto;
     const existUser = await this.blogUserRepository.findByEmail(email);
 
     if (!existUser) {
@@ -46,7 +46,7 @@ export class AuthenticationService {
   public async getUser(id: string) {
     const user = await this.blogUserRepository.findById(id);
 
-    if (! user) {
+    if (!user) {
       throw new NotFoundException(AUTH_USER_NOT_FOUND);
     }
 
