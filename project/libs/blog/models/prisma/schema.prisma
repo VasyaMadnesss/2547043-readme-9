@@ -12,3 +12,49 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum PublicationType {
+  video
+  text
+  quote
+  photo
+  link
+}
+
+enum PublicationStatus {
+  published
+  draft
+}
+
+model Publication {
+  id          String            @id @default(uuid())
+  type        PublicationType
+  status      PublicationStatus @default(published)
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  publishedAt DateTime          @map("published_at")
+
+  // Автор из внешнего микросервиса
+  authorId String @map("author_id")
+
+  // Специфичные поля по типу
+  // VIDEO
+  videoTitle String? @map("video_title") // 20–50 символов
+  videoUrl   String? @map("video_url") // YouTube
+
+  // TEXT
+  textTitle    String? @map("text_title") // 20–50 символов
+  announcement String? // 50–255 символов
+  content      String? // 100–1024 символов
+
+  // QUOTE
+  quoteText   String? @map("quote_text") // 20–300 символов
+  quoteAuthor String? @map("quote_author") // 3–50 символов
+
+  // PHOTO
+  photoUrl String? @map("photo_url")
+
+  // LINK
+  linkUrl         String? @map("link_url")
+  linkDescription String? @map("link_description") // до 300 символов
+}
