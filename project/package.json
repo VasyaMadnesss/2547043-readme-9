@@ -58,6 +58,7 @@
     "libs/user/authentication",
     "libs/user/blog-user",
     "libs/shared/data-access",
-    "libs/user/config"
+    "libs/user/config",
+    "libs/blog/models"
   ]
 }
