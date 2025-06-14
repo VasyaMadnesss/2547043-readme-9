@@ -1,3 +1,4 @@
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -6,6 +7,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output = "../../../../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -13,50 +15,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum PublicationType {
-  video
-  text
-  quote
-  photo
-  link
-}
+model Post {
+  id          String   @id @default(uuid()) @map("id")
+  categories  Category[]
+  title       String
+  description String
+  content     String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  userId      String @map("user_id")
+  comments    Comment[]
+  favorite    Favorite[]
 
-enum PublicationStatus {
-  published
-  draft
-}
-
-model Publication {
-  id          String            @id @default(uuid())
-  type        PublicationType
-  status      PublicationStatus @default(published)
-  createdAt   DateTime          @default(now()) @map("created_at")
-  updatedAt   DateTime          @updatedAt @map("updated_at")
-  publishedAt DateTime          @map("published_at")
-
-  // Автор из внешнего микросервиса
-  authorId String @map("author_id")
-
-  // Специфичные поля по типу
-  // VIDEO
-  videoTitle String? @map("video_title") // 20–50 символов
-  videoUrl   String? @map("video_url") // YouTube
-
-  // TEXT
-  textTitle    String? @map("text_title") // 20–50 символов
-  announcement String? // 50–255 символов
-  content      String? // 100–1024 символов
-
-  // QUOTE
-  quoteText   String? @map("quote_text") // 20–300 символов
-  quoteAuthor String? @map("quote_author") // 3–50 символов
-
-  // PHOTO
-  photoUrl String? @map("photo_url")
-
-  // LINK
-  linkUrl         String? @map("link_url")
-  linkDescription String? @map("link_description") // до 300 символов
-
+  @@index([title])
   @@map("posts")
+}
+
+model Category {
+  id        String  @id @default(uuid())
+  title     String
+  posts     Post[]
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  @@index([title])
+  @@map("categories")
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  message     String
+  userId      String    @map("user_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId      String    @map("post_id")
+
+  @@index([postId])
+  @@map("comments")
+}
+
+model Favorite {
+  id          String    @id @default(uuid())
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId      String    @map("post_id")
+  userId      String    @map("user_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  @@map("favorites")
 }
