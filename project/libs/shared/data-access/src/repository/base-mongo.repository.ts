@@ -1,10 +1,10 @@
-import { Document, Model, UpdateQuery } from 'mongoose';
+import { Document, Model, Types, UpdateQuery } from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
 
 import { Entity, StorableEntity, EntityFactory } from '@project/shared-core';
 import { Repository } from './repository.interface';
 
-export abstract class BaseMongoRepository<T extends Entity & StorableEntity<ReturnType<T['toPOJO']>>, DocumentType extends Document> implements Repository<T> {
+export abstract class BaseMongoRepository<T extends Entity & StorableEntity<ReturnType<T['toPOJO']>>, DocumentType extends Document & {_id: Types.ObjectId}> implements Repository<T> {
 
   constructor(
     protected entityFactory: EntityFactory<T>,
