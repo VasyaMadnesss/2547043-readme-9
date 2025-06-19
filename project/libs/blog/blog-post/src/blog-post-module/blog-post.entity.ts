@@ -1,56 +1,66 @@
-import { Entity, StorableEntity, BlogPostTypes } from '@project/shared-core';
+import {
+  Entity,
+  StorableEntity,
+  Post,
+  PostType,
+  PostStatus,
+  LinkPost,
+  VideoPost,
+  TextPost,
+  PhotoPost,
+  QuotePost,
+  Comment,
+  Like,
+  Tag,
+  TagWithPosts,
+} from '@project/shared-core';
 
-export class BlogPostEntity
-  extends Entity
-  implements StorableEntity<BlogPostTypes.Post>
-{
-  type!: BlogPostTypes.PostType;
-  status!: BlogPostTypes.PostStatus;
-  createdAt!: string;
-  publishedAt!: string;
-  updatedAt!: string;
-  userId!: string;
-  isRepost!: boolean;
-  originalPostId?: string | null;
-  originalPost!: BlogPostTypes.Post | null;
-  reposts!: BlogPostTypes.Post[] | null;
-  postDetails!:
-    | BlogPostTypes.VideoPost
-    | BlogPostTypes.TextPost
-    | BlogPostTypes.QuotePost
-    | BlogPostTypes.PhotoPost
-    | BlogPostTypes.LinkPost;
-  tags!: string[] | null;
-  comments!: BlogPostTypes.Comment[] | null;
-  likes!: BlogPostTypes.Like[] | null;
 
-  constructor(post: BlogPostTypes.Post) {
+export class BlogPostEntity extends Entity implements StorableEntity<Post> {
+  type!: PostType;
+  status!: PostStatus;
+  createdAt?: Post['createdAt'];
+  publishedAt?: Post['publishedAt'];
+  updatedAt?: Post['updatedAt'];
+  userId!: Post['userId'];
+  isRepost!: Post['isRepost'];
+  originalPostId!: Post['originalPostId'];
+  originalPost!: Post['originalPost'];
+  reposts?: Post['reposts'];
+  typeSpecificFeatures!: VideoPost | TextPost | QuotePost | PhotoPost | LinkPost;
+  tags?: Tag[] | TagWithPosts[] | null;
+  comments?: Comment[] | null;
+  likes?: Like[] | null;
+  likesCount?: number;
+
+  constructor(post: Post) {
     super();
     this.populate(post);
   }
 
-  public populate(post?: BlogPostTypes.Post): void {
+  public populate(post?: Post): void {
     if (!post) {
       return;
     }
-    this.id = post.id ?? '';
+    this.id = post.id;
     this.type = post.type;
     this.status = post.status;
     this.createdAt = post.createdAt;
-    this.publishedAt = post.publishedAt ?? '';
-    this.updatedAt = post.updatedAt ?? '';
+    this.publishedAt = post.publishedAt;
+    this.updatedAt = post.updatedAt;
     this.userId = post.userId;
     this.isRepost = post.isRepost;
-    this.originalPostId = post.originalPostId ?? '';
-    this.originalPost = post.originalPost ?? null;
-    this.reposts = post.reposts ?? null;
-    this.postDetails = post.postDetails;
-    this.tags = post.tags ?? null;
+    this.originalPostId = post.originalPostId;
+    this.originalPost = post.originalPost;
+    this.reposts = post.reposts;
+    this.typeSpecificFeatures = post[`${post.type}Post`] as VideoPost | TextPost | QuotePost | PhotoPost | LinkPost;
+    this.tags = post.tags;
     this.comments = post.comments;
     this.likes = post.likes;
+    this.likesCount = post.likes ? post.likes.length : undefined;
   }
 
-  public toPOJO(): BlogPostTypes.Post {
+  public toPOJO(): Post {
     return {
       id: this.id,
       type: this.type,
@@ -63,7 +73,7 @@ export class BlogPostEntity
       originalPostId: this.originalPostId,
       originalPost: this.originalPost,
       reposts: this.reposts,
-      postDetails: this.postDetails,
+      [`${this.type}Post`]: this.typeSpecificFeatures,
       tags: this.tags,
       comments: this.comments,
       likes: this.likes,

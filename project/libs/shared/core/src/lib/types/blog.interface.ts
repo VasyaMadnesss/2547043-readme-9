@@ -1,106 +1,79 @@
-export enum PostType {
-  VIDEO = 'video',
-  TEXT = 'text',
-  QUOTE = 'quote',
-  PHOTO = 'photo',
-  LINK = 'link',
-}
+import {
+  Comment,
+  Like,
+  LinkPost,
+  PhotoPost,
+  Prisma,
+  QuotePost,
+  Tag,
+  TextPost,
+  VideoPost,
+} from '@prisma/client';
 
-export enum PostStatus {
-  PUBLISHED = 'published',
-  DRAFT = 'draft',
-}
-
-export interface BasePost {
-  id: string;
-  type: PostType;
-  status: PostStatus;
-  createdAt: string; // ISO format
-  publishedAt: string;
-  updatedAt: string;
-  userId: string;
-  isRepost: boolean;
-  originalPostId?: string | null;
-}
-
-export interface VideoPost {
-  id: string;
-  title: string;
-  videoUrl: string;
-}
-
-export interface TextPost {
-  id: string;
-  title: string;
-  announcement: string;
-  text: string;
-}
-
-export interface QuotePost {
-  id: string;
-  quote: string;
-  author: string;
-}
-
-export interface PhotoPost {
-  id: string;
-  photoUrl: string;
-}
-
-export interface LinkPost {
-  id: string;
-  url: string;
-  description?: string;
-}
-
-export interface Comment {
-  id: string;
-  text: string;
-  createdAt: string;
-  userId: string;
-  postId: string;
-}
-
-export interface Like {
-  id: string;
-  userId: string;
-  postId: string;
-  createdAt: string;
-}
-
-// Полный пост с вложенными типами
-export interface Post extends BasePost {
-  originalPost: Post | null;
-  reposts: Post[] | null;
-
-  postDetails: VideoPost | TextPost | QuotePost | PhotoPost | LinkPost;
-
-  tags: string[] | null;
-  comments: Comment[] | null;
-  likes: Like[] | null;
-}
-
-export interface CreateVideoPost {
-  type: PostType.VIDEO;
-  publishedAt: string;
-  userId: string;
-  videoPost: {
-    title: string;
-    videoUrl: string;
+type FullPost = Prisma.PostGetPayload<{
+  include: {
+    textPost: true;
+    videoPost: true;
+    quotePost: true;
+    photoPost: true;
+    linkPost: true;
+    tags: true;
+    comments: true;
+    likes: true;
+    originalPost: true;
+    reposts: true;
   };
-  tags?: string[];
-}
+}>;
 
-export interface CreateTextPost {
-  type: PostType.TEXT;
-  publishedAt: string;
-  userId: string;
-  textPost: {
-    title: string;
-    announcement: string;
-    text: string;
+type keysToOmit = // Поля, для которых будет возможно значение undefined или null
+  | 'comments'
+  | 'likes'
+  | 'reposts'
+  | 'tags'
+  | 'textPost'
+  | 'videoPost'
+  | 'quotePost'
+  | 'photoPost'
+  | 'linkPost'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'publishedAt'
+  | 'originalPost'
+  | 'originalPostId'
+
+export type Post = Omit<FullPost, keysToOmit> & {
+  reposts?: Post[] | null;
+  comments?: Comment[] | null;
+  likes?: Like[] | null;
+  tags?: Tag[] | TagWithPosts[] | null;
+  textPost?: TextPost | null;
+  videoPost?: VideoPost | null;
+  quotePost?: QuotePost | null;
+  photoPost?: PhotoPost | null;
+  linkPost?: LinkPost | null;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+  publishedAt?: Date | null;
+  originalPost?: FullPost['originalPost'] | null;
+  originalPostId?: FullPost['originalPostId'] | null;
+};
+
+export type TagWithPosts = Prisma.TagGetPayload<{
+  include: {
+    name: true;
+    posts: true;
   };
-  tags?: string[];
-}
+}>;
 
-// И так далее для других типов постов
+export type {
+  PostType,
+  PostStatus,
+  LinkPost,
+  VideoPost,
+  TextPost,
+  PhotoPost,
+  QuotePost,
+  Comment,
+  Like,
+  Tag,
+} from '@prisma/client';
