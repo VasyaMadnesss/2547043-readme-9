@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-const UUIDS = [
+const POST_UUIDS = [
   '9f8d7b87-84e2-4d36-ae03-40ff0c5680cb',
   '59b92d2b-cb45-421c-bd2e-4cbde84e3651',
   'dff9d6ac-2d63-4972-8f1c-3f53707c4c47',
@@ -23,52 +23,72 @@ const UUIDS = [
   '64cd2dbf-3d02-4653-8207-01b1c3442a0b',
 ];
 
-const FIRST_USER_ID = UUIDS[1];
-// const SECOND_USER_ID = UUIDS[2];
-// const THIRD_USER_ID = UUIDS[3];
-
-const FIRST_POST_ID = UUIDS[4];
+const USER_UUIDS = [
+  '8a1e0fa2-2e5e-4d4d-8c0e-2f5cbd1d9a3a',
+  'd1f0875c-8f3a-4a4e-82f5-9cc202620d14',
+  '6cb5585b-0fd7-4b48-88c7-1d5e1e83194b',
+  '0fc2238e-3c9a-49dc-9a5e-0411d3b6b7b4',
+  'b5c01b71-4dc1-47ea-861b-d3fa85f9cbb1',
+  'f3fc777f-bc0a-4b99-8613-46ec426c7d85',
+  '8f92836b-3a2a-4d6b-937b-96a93a683bdf',
+  'c640fb20-86cc-4f15-a30b-0dc118a78ea1',
+  '9e49f325-bf71-417e-a8fa-e19d723d445f',
+  '2155e28d-6f1f-4ae6-a6e2-5c98d87191a3',
+];
 
 function getTags() {
-  return ['funny', 'nature', 'cats', 'people', 'stress', 'dating'];
+  const tags = ['funny', 'nature', 'cats', 'people', 'stress', 'dating'];
+  const generatedTags = tags.map(() => getRandomArrayValue(tags));
+  return generatedTags;
 }
 
-async function seedDbWithAPost(prisma: PrismaClient): Promise<void> {
-  await prisma.post.create({
-    data: {
-      id: FIRST_POST_ID,
-      type: 'text',
-      publishedAt: new Date().toISOString(),
-      userId: FIRST_USER_ID,
-      textPost: {
-        create: {
-          title: 'default text title',
-          announcement: 'default text announcement',
-          text: 'text content of the textPost',
+function getRandomArrayValue<T>(arr: T[]): T {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
+}
+
+async function seedDbWithPosts(prisma: PrismaClient): Promise<void> {
+  for (const POST_UUID of POST_UUIDS) {
+    await prisma.post.create({
+      data: {
+        id: POST_UUID,
+        type: 'text',
+        publishedAt: new Date().toISOString(),
+        userId: getRandomArrayValue(USER_UUIDS),
+        textPost: {
+          create: {
+            title: 'default text title',
+            announcement: 'default text announcement',
+            text: 'text content of the textPost',
+          },
+        },
+        tags: {
+          connectOrCreate: getTags().map((name) => ({
+            where: { name },
+            create: { name },
+          })),
+        },
+        comments: {
+          create: [
+            {
+              text: 'defaultcommenttext',
+              userId: getRandomArrayValue(USER_UUIDS),
+            },
+            {
+              text: '123COMMENT',
+              userId: getRandomArrayValue(USER_UUIDS),
+            },
+          ],
         },
       },
-      tags: {
-        connectOrCreate: getTags().map((name) => ({
-          where: { name },
-          create: { name },
-        })),
-      },
-      comments: {
-        create: [
-          {
-            text: 'defaultcommenttext',
-            userId: FIRST_USER_ID,
-          },
-        ],
-      },
-    },
-  });
+    });
+  }
 }
 
 async function bootstrap() {
   const prismaClient = new PrismaClient();
   try {
-    await seedDbWithAPost(prismaClient);
+    await seedDbWithPosts(prismaClient);
     globalThis.process.exit(0);
   } catch (error: unknown) {
     console.error(error);
