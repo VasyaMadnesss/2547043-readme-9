@@ -1,5 +1,5 @@
 {
-  "name": "@project/blog-models",
+  "name": "@project/blog-post",
   "version": "0.0.1",
   "private": true,
   "main": "./dist/index.js",
@@ -14,11 +14,7 @@
       "default": "./dist/index.js"
     }
   },
-  "nx": {
-    "name": "blog-models"
-  },
   "dependencies": {
-    "@prisma/client": "^5.12.1",
     "tslib": "^2.3.0"
   }
 }
